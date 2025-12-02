@@ -55,10 +55,18 @@
     <div id="gameOverScreen" class="hidden">
         <h1>FIN DEL JUEGO</h1>
         <h2 id="finalScore">Puntos: 0</h2>
+            <div class="leaderboard-box">
+        <h3>🏆 RÉCORDS MUNDIALES 🏆</h3>
+        <ul id="leaderboardList" style="text-align: left; list-style: none; padding: 0; color: #ffd700;">
+            <li>Cargando...</li>
+        </ul>
+    </div>
         <button onclick="location.reload()">Reintentar</button>
     </div>
+
     <div id="pauseScreen" class="hidden">
     <h1>PAUSA ⏸️</h1>
+    
     
     <div class="volume-box">
         <label>🔊 Volumen Música:</label>
@@ -70,6 +78,8 @@
 </div>
 
     <canvas id="gameCanvas"></canvas>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>

@@ -1,6 +1,65 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const firebaseConfig = {
+  apiKey: "AIzaSyCfwpnyqtXnnVwx1Mm2k9MTm-laCdQ13Xo",
+  authDomain: "juego-padrastro.firebaseapp.com",
+  databaseURL: "https://juego-padrastro-default-rtdb.firebaseio.com",
+  projectId: "juego-padrastro",
+  storageBucket: "juego-padrastro.firebasestorage.app",
+  messagingSenderId: "805890459882",
+  appId: "1:805890459882:web:8104f3e63b274cdb8a6f93"
+};
+// Iniciamos la conexión
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// Función para GUARDAR puntos
+function saveHighscore(name, score) {
+    db.ref('scores').push({
+        name: name,
+        score: score,
+        date: Date.now()
+    });
+}
+
+// Función para LEER la tabla
+function loadLeaderboard() {
+    const list = document.getElementById('leaderboardList');
+    list.innerHTML = '<li>Cargando...</li>';
+
+    // Pedimos los últimos 10 mejores
+    db.ref('scores').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
+        list.innerHTML = ''; 
+        let scores = [];
+        snapshot.forEach((child) => scores.push(child.val()));
+        
+        // Ordenar de mayor a menor
+        scores.sort((a, b) => b.score - a.score);
+
+        if (scores.length === 0) list.innerHTML = '<li>Sé el primero en jugar</li>';
+
+        scores.forEach((s, index) => {
+            const li = document.createElement('li');
+            li.style.borderBottom = "1px solid #333";
+            li.style.padding = "5px";
+            li.style.display = "flex";
+            li.style.justifyContent = "space-between";
+            
+            // Medallas para el top 3
+            let rank = index + 1;
+            if (rank === 1) rank = "🥇";
+            else if (rank === 2) rank = "🥈";
+            else if (rank === 3) rank = "🥉";
+            else rank = `#${rank}`;
+
+            li.innerHTML = `<span>${rank} ${s.name}</span> <span>${s.score}</span>`;
+            list.appendChild(li);
+        });
+    });
+}
 // --- 1. AUDIO ---
 const bgMusic = document.getElementById('bgMusic');
 const volSliderStart = document.getElementById('volSlider');
@@ -478,4 +537,7 @@ function gameOver() {
     document.getElementById('bgMusic').pause();
     document.getElementById('gameOverScreen').classList.remove('hidden');
     document.getElementById('finalScore').innerText = `Puntos: ${score}`;
+    // --- ESTO ES LO NUEVO ---
+    saveHighscore(currentPlayerName, score); // Guarda en la nube
+    loadLeaderboard(); // Descarga la lista mundial
 }
