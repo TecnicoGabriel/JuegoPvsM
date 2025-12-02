@@ -1,6 +1,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// --------------------------------------------------------
+// 1. CONFIGURACIÓN DE FIREBASE
+// --------------------------------------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyCfwpnyqtXnnVwx1Mm2k9MTm-laCdQ13Xo",
   authDomain: "juego-padrastro.firebaseapp.com",
@@ -11,12 +14,15 @@ const firebaseConfig = {
   appId: "1:805890459882:web:8104f3e63b274cdb8a6f93"
 };
 
+// Inicializar Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
+// Guardar Puntos
 function saveHighscore(name, score) {
+    // Guardar en la base de datos
     db.ref('scores').push({
         name: name,
         score: score,
@@ -24,26 +30,37 @@ function saveHighscore(name, score) {
     });
 }
 
+// Cargar Tabla
 function loadLeaderboard() {
     const list = document.getElementById('leaderboardList');
-    if(!list) return;
+    if(!list) return; // Si no existe la lista, no hacer nada
     list.innerHTML = '<li>Cargando...</li>';
 
     db.ref('scores').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
         list.innerHTML = ''; 
         let scores = [];
-        snapshot.forEach((child) => scores.push(child.val()));
+        
+        snapshot.forEach((child) => {
+            scores.push(child.val());
+        });
+
+        // Ordenar de mayor a menor
         scores.sort((a, b) => b.score - a.score);
 
-        if (scores.length === 0) list.innerHTML = '<li>Sé el primero en jugar</li>';
+        if (scores.length === 0) {
+            list.innerHTML = '<li>Sé el primero en jugar</li>';
+            return;
+        }
 
         scores.forEach((s, index) => {
             const li = document.createElement('li');
+            // Estilo directo para asegurar que se vea bien
             li.style.borderBottom = "1px solid #333";
             li.style.padding = "5px";
             li.style.display = "flex";
             li.style.justifyContent = "space-between";
-            
+            li.style.color = index === 0 ? "#ffd700" : "white"; // Dorado al primero
+
             let rank = index + 1;
             if (rank === 1) rank = "🥇";
             else if (rank === 2) rank = "🥈";
@@ -126,9 +143,8 @@ let touchY = null;
 let isTouching = false;
 let scaleFactor = 1; 
 
-// --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-let currentPlayerName = "Jugador"; // Variable que faltaba
-// ---------------------------------
+// 🔥 CORRECCIÓN: Variable GLOBAL para el nombre 🔥
+let currentPlayerName = "Jugador"; 
 
 // --- 4. CONFIGURACIÓN ---
 function resize() { 
@@ -260,7 +276,7 @@ class Entity {
         if (type === 'boss') {
             this.w = 200 * scaleFactor; 
             this.h = 200 * scaleFactor;
-            this.maxHp = 50 + (score * 0.05); // HP BOSS = 50
+            this.maxHp = 50 + (score * 0.05); // BOSS 50 HP
             this.hp = this.maxHp;
             this.img = images.boss;
             this.x = canvas.width/2 - (this.w/2); 
@@ -301,7 +317,6 @@ class Entity {
                  const cx = this.x + this.w/2;
                  const cy = this.y + this.h;
                  const bSize = 15 * scaleFactor;
-
                  if (damageTaken < (this.maxHp * 0.3)) { 
                      enemyProjectiles.push({x: cx, y: cy, vx: 0, vy: 6, w: bSize, h: bSize});
                      enemyProjectiles.push({x: cx, y: cy, vx: -3, vy: 5, w: bSize, h: bSize});
@@ -343,10 +358,10 @@ class Entity {
 }
 
 window.iniciarJuego = function() {
-    // --- ESTO LEE TU NOMBRE DEL INPUT ---
     const p1Input = document.getElementById('p1Name');
+    // 🔥 ASIGNAR EL NOMBRE 🔥
     if(p1Input && p1Input.value.trim() !== "") currentPlayerName = p1Input.value;
-    else currentPlayerName = "Piloto"; // Nombre por defecto si lo dejan vacío
+    else currentPlayerName = "Piloto";
 
     resize();
     playRandomMusic();
@@ -490,7 +505,7 @@ function gameOver() {
     document.getElementById('gameOverScreen').classList.remove('hidden');
     document.getElementById('finalScore').innerText = `Puntos: ${score}`;
     
-    // GUARDAR EN FIREBASE (Ahora sí con la variable correcta)
+    // 🔥 AHORA SÍ FUNCIONARÁ 🔥
     saveHighscore(currentPlayerName, score);
     loadLeaderboard();
 }
