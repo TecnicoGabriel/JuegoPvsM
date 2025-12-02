@@ -2,18 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>alguien se aso POR ESTO XD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LA REBELIÓN: PADRASTRO VS MAMÁ</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <audio id="bgMusic" loop>
-        <source src="assets/sounds/musica_fondo.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgMusic" loop></audio>
 
     <div id="startScreen">
-        <h1>LA REBELION:</h1>
-        <h1>PADRASTRO vs MAMA SOLTERA</h1>
+        <h1>LA REBELIÓN:</h1>
+        <h1 style="font-size: 30px; color: #0ff;">PADRASTRO vs MAMÁ SOLTERA</h1>
         
         <div class="setup-box">
             <h3>JUGADOR 1</h3>
@@ -37,10 +36,12 @@
             <button onclick="setMode(1)" class="active" id="btn1P">1 JUGADOR</button>
             <button onclick="setMode(2)" id="btn2P">2 JUGADORES (PC)</button>
         </div>
-<div class="volume-box">
-    <label for="volSlider">🔊 Volumen Música:</label>
-    <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.5">
-</div>
+
+        <div class="volume-box">
+            <label for="volSlider">🔊 Volumen Música:</label>
+            <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.5">
+        </div>
+
         <button onclick="iniciarJuego()" class="start-btn">¡COMENZAR!</button>
     </div>
 
@@ -53,33 +54,36 @@
     </div>
 
     <div id="gameOverScreen" class="hidden">
-        <h1>FIN DEL JUEGO</h1>
+        <h1 style="color: red;">FIN DEL JUEGO</h1>
         <h2 id="finalScore">Puntos: 0</h2>
-            <div class="leaderboard-box">
-        <h3>🏆 RÉCORDS MUNDIALES 🏆</h3>
-        <ul id="leaderboardList" style="text-align: left; list-style: none; padding: 0; color: #ffd700;">
-            <li>Cargando...</li>
-        </ul>
-    </div>
-        <button onclick="location.reload()">Reintentar</button>
+        
+        <div class="leaderboard-box">
+            <h3>🏆 RÉCORDS MUNDIALES 🏆</h3>
+            <ul id="leaderboardList" style="text-align: left; list-style: none; padding: 0; color: #ffd700;">
+                <li>Cargando...</li>
+            </ul>
+        </div>
+
+        <button onclick="location.reload()" class="retry-btn">Reintentar</button>
     </div>
 
     <div id="pauseScreen" class="hidden">
-    <h1>PAUSA ⏸️</h1>
-    
-    
-    <div class="volume-box">
-        <label>🔊 Volumen Música:</label>
-        <input type="range" id="pauseVolSlider" min="0" max="1" step="0.1" value="0.5">
+        <h1>PAUSA ⏸️</h1>
+        
+        <div class="volume-box">
+            <label>🔊 Volumen Música:</label>
+            <input type="range" id="pauseVolSlider" min="0" max="1" step="0.1" value="0.5">
+        </div>
+
+        <button onclick="togglePause()">CONTINUAR</button>
+        <button onclick="location.reload()">SALIR AL MENÚ</button>
     </div>
 
-    <button onclick="togglePause()">CONTINUAR</button>
-    <button onclick="location.reload()">SALIR AL MENÚ</button>
-</div>
-
     <canvas id="gameCanvas"></canvas>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="js/game.js"></script>
+
 </body>
 </html>

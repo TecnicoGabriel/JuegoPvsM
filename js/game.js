@@ -10,13 +10,12 @@ const firebaseConfig = {
   messagingSenderId: "805890459882",
   appId: "1:805890459882:web:8104f3e63b274cdb8a6f93"
 };
-// Iniciamos la conexión
+
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
-// Función para GUARDAR puntos
 function saveHighscore(name, score) {
     db.ref('scores').push({
         name: name,
@@ -25,18 +24,15 @@ function saveHighscore(name, score) {
     });
 }
 
-// Función para LEER la tabla
 function loadLeaderboard() {
     const list = document.getElementById('leaderboardList');
+    if(!list) return;
     list.innerHTML = '<li>Cargando...</li>';
 
-    // Pedimos los últimos 10 mejores
     db.ref('scores').orderByChild('score').limitToLast(10).once('value', (snapshot) => {
         list.innerHTML = ''; 
         let scores = [];
         snapshot.forEach((child) => scores.push(child.val()));
-        
-        // Ordenar de mayor a menor
         scores.sort((a, b) => b.score - a.score);
 
         if (scores.length === 0) list.innerHTML = '<li>Sé el primero en jugar</li>';
@@ -48,7 +44,6 @@ function loadLeaderboard() {
             li.style.display = "flex";
             li.style.justifyContent = "space-between";
             
-            // Medallas para el top 3
             let rank = index + 1;
             if (rank === 1) rank = "🥇";
             else if (rank === 2) rank = "🥈";
@@ -60,21 +55,18 @@ function loadLeaderboard() {
         });
     });
 }
-// --- 1. AUDIO ---
+
+// --------------------------------------------------------
+// 2. AUDIO Y RECURSOS
+// --------------------------------------------------------
 const bgMusic = document.getElementById('bgMusic');
 const volSliderStart = document.getElementById('volSlider');
 const volSliderPause = document.getElementById('pauseVolSlider');
 
 const playlist = [
-    'assets/sounds/track1.mp3',
-    'assets/sounds/track2.mp3',
-    'assets/sounds/track3.mp3',
-    'assets/sounds/track4.mp3',
-    'assets/sounds/track5.mp3',
-    'assets/sounds/track6.mp3',
-    'assets/sounds/track7.mp3',
-    'assets/sounds/track8.mp3',
-    'assets/sounds/track9.mp3',
+    'assets/sounds/track1.mp3', 'assets/sounds/track2.mp3', 'assets/sounds/track3.mp3',
+    'assets/sounds/track4.mp3', 'assets/sounds/track5.mp3', 'assets/sounds/track6.mp3',
+    'assets/sounds/track7.mp3', 'assets/sounds/track8.mp3', 'assets/sounds/track9.mp3',
     'assets/sounds/track10.mp3'
 ];
 
@@ -93,7 +85,6 @@ if(volSliderStart) volSliderStart.addEventListener('input', e => updateVolume(e.
 if(volSliderPause) volSliderPause.addEventListener('input', e => updateVolume(e.target.value));
 updateVolume(0.5);
 
-// --- 2. IMÁGENES ---
 const images = {
     p1: new Image(), p2: new Image(),
     enemy: new Image(), shooter: new Image(), boss: new Image(),
@@ -112,7 +103,9 @@ images.powerDouble.src = 'assets/images/poder_arma.png';
 images.powerSpread.src = 'assets/images/poder_spread.png';
 images.powerHealth.src = 'assets/images/poder_vida.png';
 
-// --- 3. VARIABLES DE ESTADO ---
+// --------------------------------------------------------
+// 3. VARIABLES DE ESTADO
+// --------------------------------------------------------
 let gameRunning = false;
 let isPaused = false;
 let mode = 1; 
@@ -133,6 +126,10 @@ let touchY = null;
 let isTouching = false;
 let scaleFactor = 1; 
 
+// --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+let currentPlayerName = "Jugador"; // Variable que faltaba
+// ---------------------------------
+
 // --- 4. CONFIGURACIÓN ---
 function resize() { 
     canvas.width = window.innerWidth; 
@@ -150,22 +147,11 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => keys[e.code] = false);
 
 window.addEventListener('touchstart', e => {
-    if(gameRunning && !isPaused) { 
-        isTouching = true; 
-        touchX = e.touches[0].clientX; 
-        touchY = e.touches[0].clientY;
-    }
+    if(gameRunning && !isPaused) { isTouching = true; touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }
 }, {passive: false});
-
 window.addEventListener('touchmove', e => {
-    if(gameRunning && !isPaused) { 
-        e.preventDefault(); 
-        isTouching = true; 
-        touchX = e.touches[0].clientX;
-        touchY = e.touches[0].clientY;
-    }
+    if(gameRunning && !isPaused) { e.preventDefault(); isTouching = true; touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }
 }, {passive: false});
-
 window.addEventListener('touchend', () => { isTouching = false; touchX = null; touchY = null; });
 
 const p1Upload = document.getElementById('p1Upload');
@@ -196,7 +182,7 @@ window.togglePause = function() {
     }
 }
 
-// --- 6. CLASES ---
+// --- 5. CLASES ---
 class Player {
     constructor(id, x, img, controls) {
         this.id = id;
@@ -214,29 +200,23 @@ class Player {
 
     update() {
         if (this.hp <= 0) return;
-
-        // PC Movement
         if (keys[this.controls.left] && this.x > 0) this.x -= 7;
         if (keys[this.controls.right] && this.x < canvas.width - this.w) this.x += 7;
         if (keys[this.controls.up] && this.y > 0) this.y -= 7;
         if (keys[this.controls.down] && this.y < canvas.height - this.h) this.y += 7;
         
-        // Mobile Movement
         if (this.id === 1 && isTouching && touchX !== null && touchY !== null) {
             this.x = touchX - (this.w / 2); 
             this.y = touchY - (this.h / 2);
-            
             const now = Date.now();
             if (now - this.lastShot > this.cadence) { this.shoot(); this.lastShot = now; }
         }
 
-        // Límites
         if (this.x < 0) this.x = 0;
         if (this.x > canvas.width - this.w) this.x = canvas.width - this.w;
         if (this.y < 0) this.y = 0;
         if (this.y > canvas.height - this.h) this.y = canvas.height - this.h;
 
-        // Disparo PC
         if (keys[this.controls.shoot]) {
             const now = Date.now();
             if (now - this.lastShot > this.cadence) { this.shoot(); this.lastShot = now; }
@@ -258,12 +238,8 @@ class Player {
     }
     
     upgradeWeapon(type) {
-        if (type === 'powerDouble') {
-            this.weaponLevel = 2; 
-        } 
-        else if (type === 'powerSpread') {
-            this.weaponLevel = 3; 
-        }
+        if (type === 'powerDouble') this.weaponLevel = 2; 
+        else if (type === 'powerSpread') this.weaponLevel = 3; 
     }
 
     draw() {
@@ -284,11 +260,8 @@ class Entity {
         if (type === 'boss') {
             this.w = 200 * scaleFactor; 
             this.h = 200 * scaleFactor;
-            
-            // --- VIDA DEL BOSS REDUCIDA A 50 ---
-            this.maxHp = 50 + (score * 0.05); // Base 50 (Mitad de 100)
+            this.maxHp = 50 + (score * 0.05); // HP BOSS = 50
             this.hp = this.maxHp;
-            
             this.img = images.boss;
             this.x = canvas.width/2 - (this.w/2); 
             this.y = -this.h; 
@@ -317,16 +290,10 @@ class Entity {
         if (this.type === 'boss') {
             this.x += this.vx;
             this.y += this.vy;
-
             if (this.x <= 0 || this.x + this.w >= canvas.width) this.vx *= -1;
             if (this.y >= canvas.height / 2) this.vy = -Math.abs(this.vy); 
+            if (this.y <= 0 && this.vy < 0) this.vy = Math.abs(this.vy); 
             
-            // Forzar entrada
-            if (this.y <= 0 && this.vy < 0) {
-                 this.vy = Math.abs(this.vy); 
-            }
-            
-            // Fases Boss
             let damageTaken = this.maxHp - this.hp;
             let fireRate = 60; 
             
@@ -336,40 +303,24 @@ class Entity {
                  const bSize = 15 * scaleFactor;
 
                  if (damageTaken < (this.maxHp * 0.3)) { 
-                     // Fase 1: Abanico
                      enemyProjectiles.push({x: cx, y: cy, vx: 0, vy: 6, w: bSize, h: bSize});
                      enemyProjectiles.push({x: cx, y: cy, vx: -3, vy: 5, w: bSize, h: bSize});
                      enemyProjectiles.push({x: cx, y: cy, vx: 3, vy: 5, w: bSize, h: bSize});
-                 } 
-                 else if (damageTaken >= (this.maxHp * 0.3) && damageTaken < (this.maxHp * 0.6)) {
-                     // Fase 2: Circular
+                 } else if (damageTaken >= (this.maxHp * 0.3) && damageTaken < (this.maxHp * 0.6)) {
                      for(let i=0; i<8; i++) {
                          let angle = (Math.PI * 2 / 8) * i;
-                         enemyProjectiles.push({
-                             x: cx, y: cy + 20, 
-                             vx: Math.cos(angle) * 6, 
-                             vy: Math.sin(angle) * 6, 
-                             w: bSize, h: bSize
-                         });
+                         enemyProjectiles.push({x: cx, y: cy + 20, vx: Math.cos(angle) * 6, vy: Math.sin(angle) * 6, w: bSize, h: bSize});
                      }
-                 } 
-                 else {
-                     // Fase 3: Dirigido
+                 } else {
                      let p1 = players[0];
                      if(p1) {
                         let angle = Math.atan2(p1.y - cy, p1.x - cx);
-                        enemyProjectiles.push({
-                             x: cx, y: cy + 20, 
-                             vx: Math.cos(angle) * 9, 
-                             vy: Math.sin(angle) * 9, 
-                             w: bSize, h: bSize
-                         });
-                         enemyProjectiles.push({x: cx, y: cy, vx: -5, vy: 4, w: bSize, h: bSize});
-                         enemyProjectiles.push({x: cx, y: cy, vx: 5, vy: 4, w: bSize, h: bSize});
+                        enemyProjectiles.push({x: cx, y: cy + 20, vx: Math.cos(angle) * 9, vy: Math.sin(angle) * 9, w: bSize, h: bSize});
+                        enemyProjectiles.push({x: cx, y: cy, vx: -5, vy: 4, w: bSize, h: bSize});
+                        enemyProjectiles.push({x: cx, y: cy, vx: 5, vy: 4, w: bSize, h: bSize});
                      }
                  }
             }
-
         } else if (this.type.startsWith('power')) {
             this.y += this.vy;
         } else {
@@ -379,7 +330,6 @@ class Entity {
                 enemyProjectiles.push({x: this.x + this.w/2, y: this.y + this.h, vx: 0, vy: 6, w: bSize, h: bSize});
             }
         }
-        
         if (this.y > canvas.height) this.markedForDeletion = true;
     }
 
@@ -393,6 +343,11 @@ class Entity {
 }
 
 window.iniciarJuego = function() {
+    // --- ESTO LEE TU NOMBRE DEL INPUT ---
+    const p1Input = document.getElementById('p1Name');
+    if(p1Input && p1Input.value.trim() !== "") currentPlayerName = p1Input.value;
+    else currentPlayerName = "Piloto"; // Nombre por defecto si lo dejan vacío
+
     resize();
     playRandomMusic();
     document.getElementById('startScreen').classList.add('hidden');
@@ -415,7 +370,6 @@ window.iniciarJuego = function() {
         up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', shoot: 'Space'
     }));
     
-    // JUGADOR 2
     if (mode === 2) {
         document.getElementById('p2Stats').style.display = 'block';
         players.push(new Player(2, canvas.width/2 + (50*scaleFactor), images.p2, {
@@ -424,7 +378,6 @@ window.iniciarJuego = function() {
     } else {
         document.getElementById('p2Stats').style.display = 'none';
     }
-
     loop();
 }
 
@@ -440,7 +393,6 @@ function loop() {
     }
 
     let spawnRate = Math.max(20, 80 - Math.floor(score/200)); 
-    
     if (!bossActive && frames % spawnRate === 0) {
         const type = Math.random() < 0.3 ? 'shooter' : 'base';
         enemies.push(new Entity(type));
@@ -537,7 +489,8 @@ function gameOver() {
     document.getElementById('bgMusic').pause();
     document.getElementById('gameOverScreen').classList.remove('hidden');
     document.getElementById('finalScore').innerText = `Puntos: ${score}`;
-    // --- ESTO ES LO NUEVO ---
-    saveHighscore(currentPlayerName, score); // Guarda en la nube
-    loadLeaderboard(); // Descarga la lista mundial
+    
+    // GUARDAR EN FIREBASE (Ahora sí con la variable correcta)
+    saveHighscore(currentPlayerName, score);
+    loadLeaderboard();
 }
