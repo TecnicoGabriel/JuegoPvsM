@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>alguien se aso POR ESTO XD</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="assets/sounds/musica_fondo.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="startScreen">
+        <h1>LA REBELION:</h1>
+        <h1>PADRASTRO vs MAMA SOLTERA</h1>
+        
+        <div class="setup-box">
+            <h3>JUGADOR 1</h3>
+            <input type="text" id="p1Name" placeholder="Nombre P1" value="Padrastro">
+            <label class="file-upload">
+                Subir Foto P1
+                <input type="file" id="p1Upload" accept="image/*">
+            </label>
+        </div>
+
+        <div class="setup-box hidden" id="p2Setup">
+            <h3>JUGADOR 2</h3>
+            <input type="text" id="p2Name" placeholder="Nombre P2" value="Mamá">
+            <label class="file-upload">
+                Subir Foto P2
+                <input type="file" id="p2Upload" accept="image/*">
+            </label>
+        </div>
+
+        <div class="mode-select">
+            <button onclick="setMode(1)" class="active" id="btn1P">1 JUGADOR</button>
+            <button onclick="setMode(2)" id="btn2P">2 JUGADORES (PC)</button>
+        </div>
+<div class="volume-box">
+    <label for="volSlider">🔊 Volumen Música:</label>
+    <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.5">
+</div>
+        <button onclick="iniciarJuego()" class="start-btn">¡COMENZAR!</button>
+    </div>
+
+    <div id="uiLayer" class="hidden">
+        <div id="scoreBoard">Puntos: 0 | Nivel: 1</div>
+        <div class="player-stats">
+            <div id="p1Stats" style="color:#0ff">P1: 100%</div>
+            <div id="p2Stats" style="color:#f0f; display:none;">P2: 100%</div>
+        </div>
+    </div>
+
+    <div id="gameOverScreen" class="hidden">
+        <h1>FIN DEL JUEGO</h1>
+        <h2 id="finalScore">Puntos: 0</h2>
+        <button onclick="location.reload()">Reintentar</button>
+    </div>
+    <div id="pauseScreen" class="hidden">
+    <h1>PAUSA ⏸️</h1>
+    
+    <div class="volume-box">
+        <label>🔊 Volumen Música:</label>
+        <input type="range" id="pauseVolSlider" min="0" max="1" step="0.1" value="0.5">
+    </div>
+
+    <button onclick="togglePause()">CONTINUAR</button>
+    <button onclick="location.reload()">SALIR AL MENÚ</button>
+</div>
+
+    <canvas id="gameCanvas"></canvas>
+    <script src="js/game.js"></script>
+</body>
+</html>
