@@ -16,34 +16,41 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 function saveHighscore(name, score) { db.ref('scores').push({ name, score, date: Date.now() }); }
-
-// --- FUNCIÓN DE TABLA CORREGIDA (TOP 5) ---
 function loadLeaderboard() {
-    // IDs reales de tu HTML
-    const ids = ['leaderboardListStart', 'leaderboardListOver'];
+    // CAMBIO IMPORTANTE: Solo apuntamos al ID de la lista de Game Over
+    const el = document.getElementById('leaderboardListOver');
     
-    // Poner "Cargando..."
-    ids.forEach(id => {
-        let el = document.getElementById(id);
-        if(el) el.innerHTML = '<li>Cargando...</li>';
-    });
+    // Si por alguna razón el elemento no existe, salimos para evitar errores
+    if (!el) return;
 
-    db.ref('scores').orderByChild('score').limitToLast(5).once('value', s => {
-        let d=[]; s.forEach(c=>d.push(c.val()));
-        d.sort((a,b)=>b.score-a.score); // Ordenar mayor a menor
+    el.innerHTML = '<li>Cargando ranking...</li>';
+
+    // Usamos .on() para mantener la conexión en tiempo real
+    // Si alguien supera un puntaje mientras tú miras tu derrota, la lista se actualizará sola
+    db.ref('scores').orderByChild('score').limitToLast(5).on('value', s => {
+        let d = [];
+        s.forEach(c => d.push(c.val()));
         
-        ids.forEach(id => {
-            let el = document.getElementById(id);
-            if(el) {
-                el.innerHTML = '';
-                if(d.length===0) el.innerHTML='<li>Sé el primero</li>';
-                d.forEach((x,i)=>{
-                    // Colores para el podio
-                    let c=i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'white';
-                    el.innerHTML+=`<li style="display:flex;justify-content:space-between;color:${c};padding:3px;border-bottom:1px solid #333"><span>#${i+1} ${x.name}</span><span>${x.score}</span></li>`;
-                });
-            }
-        });
+        // Ordenar de mayor a menor
+        d.sort((a, b) => b.score - a.score); 
+
+        el.innerHTML = ''; // Limpiar lista
+        
+        if(d.length === 0) {
+            el.innerHTML = '<li>Sé el primero en jugar</li>';
+        } else {
+            d.forEach((x, i) => {
+                // Estilos para los 3 primeros lugares
+                let color = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : 'white';
+                let icon = i === 0 ? '👑' : `#${i+1}`;
+                
+                el.innerHTML += `
+                    <li style="display:flex; justify-content:space-between; color:${color}; padding:5px; border-bottom:1px solid #444; margin-bottom: 2px;">
+                        <span>${icon} ${x.name}</span>
+                        <span>${x.score}</span>
+                    </li>`;
+            });
+        }
     });
 }
 
