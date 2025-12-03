@@ -1,7 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- 1. FIREBASE (TUS CLAVES) ---
+// --- 1. FIREBASE (PON TUS CLAVES REALES) ---
 const firebaseConfig = {
     apiKey: "AIzaSyCfwpnyqtXnnVwx1Mm2k9MTm-laCdQ13Xo", 
     authDomain: "juego-padrastro.firebaseapp.com",
@@ -16,21 +16,36 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 function saveHighscore(name, score) { db.ref('scores').push({ name, score, date: Date.now() }); }
+
+// --- CORRECCIÓN DE LA TABLA (TOP 5) ---
 function loadLeaderboard() {
-    const list = document.getElementById('leaderboardList');
-    if(!list) return; list.innerHTML = '<li>Cargando...</li>';
+    // IDs reales que tienes en tu HTML
     const ids = ['leaderboardListStart', 'leaderboardListOver'];
-    db.ref('scores').orderByChild('score').limitToLast(10).once('value', s => {
-        let d=[]; s.forEach(c=>d.push(c.val()));
-        d.sort((a,b)=>b.score-a.score);
+    
+    // Poner "Cargando..." en todas las listas que existan
+    ids.forEach(id => {
+        let el = document.getElementById(id);
+        if(el) el.innerHTML = '<li>Cargando...</li>';
+    });
+
+    // PEDIR SOLO LOS ÚLTIMOS 5
+    db.ref('scores').orderByChild('score').limitToLast(5).once('value', s => {
+        let d = [];
+        s.forEach(c => d.push(c.val()));
+        d.sort((a, b) => b.score - a.score); // Ordenar mayor a menor
+
         ids.forEach(id => {
             let el = document.getElementById(id);
-            if(el) {
+            if (el) {
                 el.innerHTML = '';
-                if(d.length===0) el.innerHTML='<li>Sé el primero</li>';
-                d.forEach((x,i)=>{
-                    let c=i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'white';
-                    el.innerHTML+=`<li style="display:flex;justify-content:space-between;color:${c};padding:3px;border-bottom:1px solid #333"><span>#${i+1} ${x.name}</span><span>${x.score}</span></li>`;
+                if (d.length === 0) el.innerHTML = '<li>Sé el primero</li>';
+                
+                d.forEach((x, i) => {
+                    let c = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : 'white';
+                    el.innerHTML += `<li style="display:flex;justify-content:space-between;color:${c};padding:5px;border-bottom:1px solid #333">
+                        <span>#${i + 1} ${x.name.substring(0,12)}</span>
+                        <span>${x.score}</span>
+                    </li>`;
                 });
             }
         });
@@ -73,7 +88,7 @@ const images = {
 let gameRunning=false, isPaused=false, mode=1, score=0, frames=0;
 let players=[], enemies=[], projectiles=[], enemyProjectiles=[], powerups=[], helpers=[];
 let keys={}, touchX=null, touchY=null, isTouching=false, scaleFactor=1;
-let currentPlayerName="Jugador", bossActive=false, bossLevel=1;
+let currentPlayerName="Jugador", bossActive=false;
 let nextBossThreshold = 2000; 
 const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
 
@@ -122,22 +137,22 @@ class Player {
     shoot() {
         let v = isMobile ? 5 : 7; 
         let bS = 20*scaleFactor;
-        let dmg = 5; // Daño base = 1 HP de bot
+        let dmg = 5; 
         
         if(this.weapon==='normal') {
-            projectiles.push({x:this.x+this.w/2-bS/2, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
+            projectiles.push({x:this.x+this.w/2-bS/2, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
         }
         else if(this.weapon==='doble') { 
-            projectiles.push({x:this.x, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
-            projectiles.push({x:this.x+this.w-bS, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
+            projectiles.push({x:this.x, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
+            projectiles.push({x:this.x+this.w-bS, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
         }
         else if(this.weapon==='metra') {
-            for(let i=0;i<4;i++) projectiles.push({x:this.x+(i*15), y:this.y, vx:0, vy:-v, w:10, h:10, img:images.bulletP, dmg:1});
+            for(let i=0;i<4;i++) projectiles.push({x:this.x+(i*15), y:this.y, vx:0, vy:-v, w:10, h:10, img:images.bulletP, dmg:dmg});
         }
         else if(this.weapon==='spread') {
-            projectiles.push({x:this.x+this.w/2, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
-            projectiles.push({x:this.x+this.w/2, y:this.y, vx:-2, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
-            projectiles.push({x:this.x+this.w/2, y:this.y, vx:2, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:1});
+            projectiles.push({x:this.x+this.w/2, y:this.y, vx:0, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
+            projectiles.push({x:this.x+this.w/2, y:this.y, vx:-2, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
+            projectiles.push({x:this.x+this.w/2, y:this.y, vx:2, vy:-v, w:bS, h:bS, img:images.bulletP, dmg:dmg});
         }
         else if(this.weapon==='canon') {
             projectiles.push({x:this.x+this.w/2-25, y:this.y, vx:0, vy:-3, w:60, h:60, img:images.bulletC, isCannon:true, dmg:2});
@@ -154,7 +169,7 @@ class Player {
 
 class Helper {
     constructor(p,s){this.p=p;this.s=s;this.w=30*scaleFactor;this.h=30*scaleFactor;this.life=600;}
-    update(){this.life--;if(this.p.hp>0){this.x=this.p.x+(this.s*45)+15;this.y=this.p.y+20;if(frames%40===0)projectiles.push({x:this.x,y:this.y,vx:0,vy:-7,w:10,h:10,img:images.bulletP, dmg:1});}}
+    update(){this.life--;if(this.p.hp>0){this.x=this.p.x+(this.s*45)+15;this.y=this.p.y+20;if(frames%40===0)projectiles.push({x:this.x,y:this.y,vx:0,vy:-7,w:10,h:10,img:images.bulletP, dmg:5});}}
     draw(){ctx.globalAlpha=1; ctx.drawImage(images.helper,this.x,this.y,this.w,this.h);}
 }
 
@@ -165,13 +180,13 @@ class Entity {
         
         if(type==='boss') {
             this.w=200*scaleFactor; this.h=200*scaleFactor;
-            // VIDA DEL BOSS (50% REDUCIDA)
             if(score <= 10000) { this.bossType=1; this.maxHp=1500; this.img=images.boss1; }
             else if(score <= 20000) { this.bossType=2; this.maxHp=3000; this.img=images.boss2; }
             else if(score <= 30000) { this.bossType=3; this.maxHp=4500; this.img=images.boss3; }
             else { this.bossType=4; this.maxHp=6000; this.img=images.bossF; }
             this.hp = this.maxHp;
             this.x=canvas.width/2-this.w/2; this.y=-this.h; this.vx=3; this.vy=2;
+            this.minionsSpawned = [false, false, false]; 
         } else if(type.startsWith('p')) { 
             this.w=40; this.h=40; this.y=-40; this.x=Math.random()*(canvas.width-40); this.vy=3;
             if(type === 'pVidaSmall') this.img = images.pVidaSmall; 
@@ -180,9 +195,7 @@ class Entity {
             else this.img = images[type]; 
         } else {
             this.w=50*scaleFactor; this.h=50*scaleFactor; this.x=Math.random()*(canvas.width-this.w); this.y=-this.h;
-            this.hp=1; 
-            this.vy=spd; 
-            // --- RESISTENCIA DE BOTS (AGUANTAN MÁS TIROS) ---
+            this.hp=1; this.vy=spd; 
             if(type==='tri'){this.img=images.tri; this.hp=3;} 
             else if(type==='laser'){this.img=images.laser; this.hp=3;} 
             else if(type==='shooter'){this.img=images.shooter; this.hp=2;} 
@@ -199,13 +212,6 @@ class Entity {
             
             let hpPerc = this.hp / this.maxHp;
             let fireRate = 60; 
-            
-            // SPAWN MINIONS BOSS (NIVEL 2+)
-            if(this.bossType >= 2 && frames % 300 === 0) { // Cada 5 segundos
-                enemies.push(new Entity('shooter'));
-                if(this.bossType >= 3) enemies.push(new Entity('tri'));
-            }
-
             if(frames%fireRate===0) {
                 let cx=this.x+this.w/2, cy=this.y+this.h, bS=15*scaleFactor;
                 if(hpPerc > 0.7) { enemyProjectiles.push({x:cx,y:cy,vx:0,vy:6,w:bS,h:bS}); } 
@@ -257,28 +263,16 @@ window.iniciarJuego=()=>{
 
 function loop() {
     if(!gameRunning||isPaused)return; requestAnimationFrame(loop); frames++; ctx.clearRect(0,0,canvas.width,canvas.height);
-    
     ctx.globalAlpha = 1;
 
     if(!bossActive && score >= nextBossThreshold) { bossActive=true; enemies.push(new Entity('boss')); }
     
-    // --- SPAWN AGRESIVO DESPUÉS DE 2000 PUNTOS ---
-    let spawnBase = 60; // Lento al principio
-    if(score > 2000) spawnBase = 40;
-    if(score > 5000) spawnBase = 20; // Lluvia de enemigos
-    
-    if(!bossActive && frames%spawnBase===0) {
+    let rate = Math.max(20, 60 - Math.floor(score/500)); 
+    if(!bossActive && frames%rate===0) {
         let r=Math.random(), t='base';
-        
-        // Probabilidades aumentadas post-Boss 1
-        let chanceShooter = score > 2000 ? 0.5 : 0.2; 
-        let chanceTri = score > 4000 ? 0.3 : 0;
-        let chanceLaser = score > 6000 ? 0.2 : 0;
-        
-        if(r < chanceLaser) t='laser';
-        else if(r < chanceLaser + chanceTri) t='tri';
-        else if(r < chanceLaser + chanceTri + chanceShooter) t='shooter';
-        
+        if(score > 2000 && r < 0.4) t='shooter';
+        if(score > 5000 && r < 0.2) t='tri';
+        if(score > 8000 && r < 0.1) t='laser';
         enemies.push(new Entity(t));
     }
     
@@ -326,11 +320,13 @@ function loop() {
                     else if(e.type==='pSpread') { ply.weapon='spread'; ply.cadence=300; }
                     e.marked=true;
                 } else {
+                    // SI BOT TOCA: DAÑO AL JUGADOR, BOT MUERE
                     if(ply.hitCD === 0) {
                         ply.hp -= 15; 
                         ply.hitCD = 30; 
                         if(e.type!=='boss') {
-                            e.marked = true; e.y = 10000; // ADIOS BOT
+                            e.marked = true;
+                            e.y = 10000;
                         }
                     }
                 }
@@ -346,7 +342,6 @@ function loop() {
                         if(e.type==='boss'){
                             score+=1000; bossActive=false; 
                             nextBossThreshold += 3000;
-                            bossLevel++; // SUBIR NIVEL DE BOSS
                         } else score+=50;
                         e.marked=true;
                     }
