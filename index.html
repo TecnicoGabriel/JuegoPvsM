@@ -11,20 +11,16 @@
     <audio id="bgMusic" loop></audio>
 
     <div id="startScreen">
-        <h1 class="prize-text">¡10 LUCAS AL TOP 1! 🤑</h1>
-        
-        <h1>LA REBELIÓN</h1>
-        <h2 style="color:#0ff; margin-top:-10px;">PADRASTRO VS MAMÁ</h2>
-
-        <div class="leaderboard-box start-leaderboard">
-            <h3>🏆 TOP MUNDIAL 🏆</h3>
-            <ul id="leaderboardListStart"><li>Cargando...</li></ul>
+        <div class="title-container">
+            <h1 class="prize-text">¡10 LUCAS AL TOP 1! 🤑</h1>
+            <h1>LA REBELIÓN</h1>
+            <h2 style="color:#0ff; margin-top:-10px;">PADRASTRO VS MAMÁ</h2>
         </div>
-        
+
         <div class="setup-row">
             <div class="setup-box">
                 <h3>JUGADOR 1</h3>
-                <input type="text" id="p1Name" placeholder="Tu Nombre" value="">
+                <input type="text" id="p1Name" placeholder="Tu Nombre" maxlength="12">
                 <label class="file-upload">Foto P1 <input type="file" id="p1Upload" accept="image/*"></label>
             </div>
             
@@ -32,17 +28,13 @@
                 <h3>DJ DE LA FIESTA</h3>
                 <select id="musicGenre">
                     <option value="rock">Rock Peruano</option>
-                    <option value="techno">Techno </option>
+                    <option value="techno">Techno</option>
                     <option value="cumbia">Cumbia</option>
                     <option value="reggaeton">Reggaeton</option>
                     <option value="salsa">Salsa</option>
                     <option value="chicha">Chicha</option>
                     <option value="random">Aleatorio</option>
                 </select>
-                <div class="volume-box">
-                    <label>Volumen:</label>
-                    <input type="range" id="volSlider" min="0" max="1" step="0.1" value="0.5">
-                </div>
             </div>
         </div>
 
@@ -53,11 +45,11 @@
         
         <div class="setup-box hidden" id="p2Setup">
             <h3>JUGADOR 2</h3>
-            <input type="text" id="p2Name" placeholder="Tu nombre x2" value="">
+            <input type="text" id="p2Name" placeholder="Nombre P2">
             <label class="file-upload">Foto P2 <input type="file" id="p2Upload" accept="image/*"></label>
         </div>
 
-        <button onclick="openGuide()" style="background: #ffd700; color: black; margin-top: 15px; border: 2px solid white;">📘 GUÍA DE ARMAS</button>
+        <button onclick="openGuide()" style="background: #ffd700; color: black; margin-top: 15px;">📘 GUÍA DE ARMAS</button>
         <button onclick="iniciarJuego()" class="start-btn">¡A PELEAR!</button>
     </div>
 
@@ -71,26 +63,25 @@
 
     <div id="guideScreen" class="hidden">
         <div class="guide-content">
-            <h2>ARMAMENTO Y ENEMIGOS</h2>
+            <h2>ARMAS Y ENEMIGOS</h2>
             <div class="guide-grid">
-                <div class="guide-item"><img src="assets/images/poder_metralleta.png"><div><b>Metralleta:</b><br>Ráfaga x4</div></div>
-                <div class="guide-item"><img src="assets/images/poder_canon.png"><div><b>Cañón:</b><br>Daño Masivo</div></div>
-                <div class="guide-item"><img src="assets/images/poder_spread.png"><div><b>Spread:</b><br>Disparo Triple</div></div>
-                <div class="guide-item"><img src="assets/images/ayudante.png"><div><b>Ayuda:</b><br>Nave Aliada</div></div>
-                <div class="guide-item"><img src="assets/images/poder_vida_full.png"><div><b>Vida Full:</b><br>Salud 100%</div></div>
-                <div class="guide-item enemy-item"><img src="assets/images/enemigo_tri.png"><div><b>Tri-Bot:</b><br>Disparo 3 lados</div></div>
-                <div class="guide-item enemy-item"><img src="assets/images/boss4.png"><div><b>BOSS:</b><br>Evoluciona</div></div>
+                <div class="guide-item"><img src="assets/images/poder_metralleta.png"><div><b>Metralleta:</b> Ráfaga x4</div></div>
+                <div class="guide-item"><img src="assets/images/poder_canon.png"><div><b>Cañón:</b> Atraviesa todo</div></div>
+                <div class="guide-item"><img src="assets/images/poder_spread.png"><div><b>Spread:</b> Tiro Triple</div></div>
+                <div class="guide-item"><img src="assets/images/ayudante.png"><div><b>Ayuda:</b> Nave aliada</div></div>
+                <div class="guide-item"><img src="assets/images/poder_vida_full.png"><div><b>Vida:</b> Cura 100%</div></div>
+                <div class="guide-item enemy-item"><img src="assets/images/enemigo_tri.png"><div><b>Tri-Bot:</b> Dispara x3</div></div>
             </div>
             <button onclick="closeGuide()">CERRAR</button>
         </div>
     </div>
 
     <div id="gameOverScreen" class="hidden">
-        <h1 style="color: red;">FIN DEL JUEGO</h1>
+        <h1 style="color: red; font-size: 40px;">FIN DEL JUEGO</h1>
         <h2 id="finalScore">Puntos: 0</h2>
         
         <div class="leaderboard-box">
-            <h3>🏆 TOP MUNDIAL 🏆</h3>
+            <h3>🏆 TOP 5 MUNDIAL 🏆</h3>
             <ul id="leaderboardListOver"><li>Cargando...</li></ul>
         </div>
 
@@ -102,18 +93,14 @@
 
     <div id="pauseScreen" class="hidden">
         <h1>PAUSA</h1>
-        <div class="volume-box">
-            <label>Volumen:</label>
-            <input type="range" id="pauseVolSlider" min="0" max="1" step="0.1" value="0.5">
-        </div>
         <button onclick="togglePause()">CONTINUAR</button>
-        <button onclick="location.reload()">SALIR</button>
+        <button onclick="goHome()">SALIR</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>
