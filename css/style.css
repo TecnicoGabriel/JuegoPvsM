@@ -1,107 +1,152 @@
+/* --- ESTILOS GENERALES (BASE PC) --- */
 body {
     margin: 0;
     overflow: hidden;
     background: #111;
     color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    touch-action: none; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    touch-action: none; /* Bloquea zoom en celular */
 }
 
 canvas {
     display: block;
-    background: url('../assets/images/fondo.png') no-repeat center;
+    background: url('../assets/images/fondo.png') no-repeat center center;
     background-size: cover;
 }
 
-#startScreen, #gameOverScreen, #pauseScreen {
+/* --- PANTALLAS (INICIO, GAME OVER, PAUSA, GUÍA) --- */
+#startScreen, #gameOverScreen, #pauseScreen, #guideScreen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.92); /* Fondo oscuro semitransparente */
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     z-index: 10;
-    backdrop-filter: blur(5px); 
+    backdrop-filter: blur(5px);
 }
 
 h1 {
     font-size: 50px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     color: #f0f;
     text-shadow: 0 0 10px #f0f, 2px 2px 0 #fff;
     text-align: center;
     line-height: 1.2;
 }
 
+h2 { margin-top: 0; color: #ffd700; }
+
+/* TEXTO DEL PREMIO (ANIMADO) */
+.prize-text {
+    color: #ffd700 !important; /* Dorado */
+    font-size: 50px !important;
+    text-shadow: 0 0 20px #ffd700, 2px 2px 0 red !important;
+    animation: blink 1s infinite;
+    margin-bottom: 20px !important;
+    text-align: center;
+}
+
+@keyframes blink {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* --- CAJAS DE CONFIGURACIÓN --- */
+.setup-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 800px;
+}
+
 .setup-box {
-    border: 2px solid #555;
-    padding: 20px;
-    margin: 10px;
+    border: 1px solid #555;
+    padding: 15px;
     border-radius: 15px;
     text-align: center;
     background: rgba(255, 255, 255, 0.05);
-    width: 300px;
+    width: 250px;
     max-width: 90%;
 }
 
-.file-upload {
-    display: inline-block;
-    margin-top: 10px;
+.setup-box h3 { margin-top: 0; color: #0ff; text-shadow: 0 0 5px #0ff; }
+
+/* Inputs y Selectores */
+input[type="text"], select {
+    width: 90%;
     padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #0ff;
+    background: #222;
+    color: white;
+    text-align: center;
+    font-size: 16px;
+}
+
+.file-upload {
+    display: block;
+    margin-top: 10px;
+    padding: 8px;
     border: 1px solid #0ff;
     border-radius: 5px;
     cursor: pointer;
     color: #0ff;
+    background: #333;
     font-size: 0.9em;
     transition: 0.3s;
 }
-
-.file-upload:hover { background: rgba(0, 255, 255, 0.1); }
-
+.file-upload:hover { background: rgba(0, 255, 255, 0.2); }
 input[type="file"] { display: none; }
 
-input[type="text"] {
+/* Sliders de Volumen */
+.volume-box {
+    margin-top: 15px;
     padding: 10px;
-    border-radius: 5px;
-    border: none;
-    text-align: center;
-    font-size: 16px;
-    width: 80%;
-    margin-bottom: 10px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
 }
+input[type=range] { width: 100%; cursor: pointer; height: 10px; margin-top: 5px; }
 
-/* Selección de Modo */
-.mode-select button {
-    margin: 10px;
-    padding: 10px 20px;
-    background: #333;
-    color: white;
-    border: 1px solid white;
-    cursor: pointer;
-    font-weight: bold;
-}
-.mode-select button.active {
-    background: #0f0;
-    color: black;
-    border-color: #0f0;
-    box-shadow: 0 0 10px #0f0;
-}
-
-/* Botón de Inicio Gigante */
-.start-btn {
-    padding: 15px 50px;
-    font-size: 24px;
-    background: linear-gradient(45deg, #f0f, #a0f); /* Degradado bonito */
+/* --- BOTONES --- */
+button {
+    padding: 15px 40px;
+    font-size: 20px;
     border: none;
-    color: white;
     border-radius: 50px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 15px;
     font-weight: bold;
+    transition: transform 0.2s;
+}
+button:active { transform: scale(0.95); }
+
+.start-btn {
+    background: linear-gradient(45deg, #f0f, #a0f);
+    color: white;
     box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-    transition: transform 0.1s;
+    font-size: 24px;
 }
 
-.start-btn:active { transform: scale(0.95); }
+.retry-btn { background: #0f0; color: black; box-shadow: 0 0 10px #0f0; margin-right: 10px; }
+.home-btn { background: #f00; color: white; box-shadow: 0 0 10px #f00; }
 
-/* Interfaz dentro del juego */
+.end-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.mode-select button {
+    margin: 5px; padding: 10px 20px; background: #333; color: white; border: 1px solid white;
+}
+.mode-select button.active {
+    background: #0f0; color: black; border-color: #0f0; box-shadow: 0 0 10px #0f0;
+}
+
+/* --- UI DENTRO DEL JUEGO --- */
 #uiLayer {
     position: absolute; top: 0; width: 100%;
     padding: 15px;
@@ -115,69 +160,89 @@ input[type="text"] {
 
 .hidden { display: none !important; }
 
-/* Caja de Volumen */
-.volume-box {
-    margin-top: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px;
+/* --- GUÍA DE JUEGO --- */
+.guide-content {
+    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 2px solid #ffd700;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 95%;
+    width: 600px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.guide-content h2 { color: #ffd700; margin-top: 0; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+.guide-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    text-align: left;
+    margin: 20px 0;
+}
+
+.guide-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid #333;
+}
+
+.guide-item img {
+    width: 40px; height: 40px;
+    margin-right: 10px;
+    border: 1px solid #0ff;
+    border-radius: 5px;
+    object-fit: contain;
+    background: black;
+}
+
+.guide-item.enemy-item img { border-color: #f05; }
+.guide-item b { color: #0ff; display: block; margin-bottom: 2px; }
+.guide-item.enemy-item b { color: #f05; }
+
+/* --- TABLA DE RÉCORDS --- */
+.leaderboard-box {
+    background: #111;
+    border: 2px solid #ffd700;
     border-radius: 10px;
-    border: 1px solid #555;
-    color: #0ff;
-    width: 250px;
+    padding: 15px;
+    margin: 15px auto; /* Centrado */
+    width: 320px;
+    max-width: 90%;
     text-align: center;
 }
-
-input[type=range] {
-    width: 100%;
-    cursor: pointer;
-    margin-top: 10px;
-    height: 20px; /* Más fácil de agarrar */
-}
-
-/* Pantalla de Pausa */
-#pauseScreen h1 { color: #fff; font-size: 50px; text-shadow: 0 0 10px #0ff; }
-
-#pauseScreen button {
-    background: transparent;
-    border: 2px solid #0ff;
-    color: #0ff;
-    margin: 10px;
-    width: 220px;
-    padding: 15px; /* Más grande */
-    font-size: 18px;
-    cursor: pointer;
-    border-radius: 30px;
-}
-
-#pauseScreen button:hover {
-    background: #0ff;
-    color: #000;
+.leaderboard-box h3 { color: #ffd700; margin-top: 0; }
+#leaderboardListStart, #leaderboardListOver {
+    list-style: none; padding: 0; margin: 0;
+    max-height: 150px; overflow-y: auto; text-align: left;
 }
 
 /* --- MODO CELULAR (RESPONSIVE) --- */
-/* Esto se activa solo si la pantalla mide menos de 768px */
 @media (max-width: 768px) {
+    .prize-text { font-size: 30px !important; }
     h1 { font-size: 35px; margin-top: 10px; }
     
-    /* Ocultar cosas de PC */
-    .mode-select, #btn2P, #p2Setup { display: none !important; }
+    .setup-row { flex-direction: column; align-items: center; gap: 10px; }
+    .setup-box { width: 90%; padding: 10px; }
     
-    /* Hacer todo más grande para el dedo */
-    .setup-box { width: 90%; padding: 15px; }
-    input[type="text"] { font-size: 20px; padding: 12px; }
-    .file-upload { padding: 15px; font-size: 18px; width: 80%; }
+    .mode-select, #btn2P, #p2Setup, .volume-box { display: none !important; } /* Ocultar volumen y J2 */
     
-    /* Botón de inicio fácil de tocar */
-    .start-btn {
-        width: 80%;
-        padding: 20px;
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-
-    /* Ajustar UI del juego */
+    input[type="text"], select { font-size: 18px; padding: 12px; }
+    
+    .start-btn { width: 80%; padding: 20px; font-size: 26px; margin-bottom: 20px; }
+    
     #uiLayer { font-size: 16px; flex-direction: row; }
     
-    /* Ajustar Pausa */
-    #pauseScreen button { width: 80%; padding: 20px; font-size: 22px; }
+    #pauseScreen button, .guide-content button { width: 80%; padding: 20px; font-size: 20px; }
+    
+    .guide-grid { grid-template-columns: 1fr; }
+    
+    .end-buttons { flex-direction: column; width: 100%; align-items: center; }
+    .retry-btn, .home-btn { width: 80%; margin: 5px 0; }
 }
