@@ -18,34 +18,54 @@ const db = firebase.database();
 function saveHighscore(name, score) { 
     db.ref('scores').push({ name: name, score: Number(score), date: Date.now() }); 
 }
-
 function loadLeaderboard() {
+    // 1. Apuntamos a la lista del Game Over
     const el = document.getElementById('leaderboardListOver');
     if (!el) return;
-    el.innerHTML = '<li style="color:white; text-align:center;">Cargando ranking...</li>';
 
-    db.ref('scores').orderByChild('score').limitToLast(5).on('value', (snapshot) => {
+    // Mensaje temporal
+    el.innerHTML = '<li style="text-align:center; color:#888;">Cargando...</li>';
+
+    // 2. IMPORTANTE: Usamos .once() para evitar duplicados y conflictos
+    db.ref('scores').orderByChild('score').limitToLast(5).once('value')
+    .then((snapshot) => {
         const data = [];
-        snapshot.forEach((childSnapshot) => data.push(childSnapshot.val()));
-        data.sort((a, b) => b.score - a.score); // Orden Descendente
+        
+        // 3. Extraemos los datos
+        snapshot.forEach((childSnapshot) => {
+            data.push(childSnapshot.val());
+        });
 
+        // 4. Ordenamos de Mayor a Menor
+        data.sort((a, b) => b.score - a.score);
+
+        // 5. Limpiamos la lista para pintar de cero
         el.innerHTML = '';
+
         if (data.length === 0) {
-            el.innerHTML = '<li style="color:white;">Aún no hay récords.</li>';
+            el.innerHTML = '<li style="text-align:center;">Sin récords</li>';
         } else {
             data.forEach((player, index) => {
-                let color = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : 'white';
-                let icon = index === 0 ? '👑' : `#${index + 1}`;
+                // Lógica de medallas (Colores)
+                let color = 'white'; // Por defecto (tu CSS lo pone blanco, pero aquí destacamos el top 3)
+                let icon = `#${index + 1}`;
+
+                if (index === 0) { color = '#ffd700'; icon = '👑'; } // Oro
+                else if (index === 1) { color = '#c0c0c0'; } // Plata
+                else if (index === 2) { color = '#cd7f32'; } // Bronce
+
+                // 6. Inyectamos el HTML limpio.
+                // NOTA: No ponemos estilos extra porque tu CSS '#leaderboardListOver li' ya hace el trabajo.
                 el.innerHTML += `
-                    <li style="display:flex; justify-content:space-between; color:${color}; padding:5px; border-bottom:1px solid #444; font-size:16px;">
+                    <li style="color: ${color};">
                         <span>${icon} ${player.name}</span>
                         <span>${player.score}</span>
                     </li>`;
             });
         }
-    });
+    })
+    .catch(err => console.error("Error Firebase:", err));
 }
-
 // --- 2. AUDIO ---
 const bgMusic = document.getElementById('bgMusic');
 const volSlider = document.getElementById('volSlider');

@@ -221,7 +221,7 @@ input[type="file"] { display: none; }
     text-align: left;
     font-size: 0.95rem;
     min-height: 50px;
-    max-height: 150px;
+    max-height: 250px;
     overflow-y: auto;
 }
 
@@ -230,6 +230,13 @@ input[type="file"] { display: none; }
     border-bottom: 1px solid #333;
     display: flex;
     justify-content: space-between;
+}
+#leaderboardListStart li span:first-child, 
+#leaderboardListOver li span:first-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%; /* Limita el nombre al 60% del ancho */
 }
 
 /* --- BOTONES --- */
