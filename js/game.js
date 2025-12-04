@@ -17,54 +17,64 @@ const db = firebase.database();
 
 function saveHighscore(name, score) { 
     db.ref('scores').push({ name: name, score: Number(score), date: Date.now() }); 
-}
+}let scoreListener = null; 
+
 function loadLeaderboard() {
-    // 1. Apuntamos a la lista del Game Over
     const el = document.getElementById('leaderboardListOver');
     if (!el) return;
 
-    // Mensaje temporal
-    el.innerHTML = '<li style="text-align:center; color:#888;">Cargando...</li>';
+    // 1. Si ya estamos escuchando cambios, apagamos la escucha anterior 
+    // para que no se vuelvan locos los datos al reiniciar el juego.
+    if (scoreListener) {
+        db.ref('scores').off(); 
+    }
 
-    // 2. IMPORTANTE: Usamos .once() para evitar duplicados y conflictos
-    db.ref('scores').orderByChild('score').limitToLast(5).once('value')
-    .then((snapshot) => {
+    el.innerHTML = '<li style="text-align:center; color:#888;">Actualizando...</li>';
+
+    // 2. Creamos la referencia a la base de datos
+    const query = db.ref('scores').orderByChild('score').limitToLast(5);
+
+    // 3. ACTIVAMOS EL MODO EN VIVO (.on)
+    // Esto se ejecutará automáticamente apenas tu saveHighscore termine de subir el dato.
+    scoreListener = query.on('value', (snapshot) => {
         const data = [];
-        
-        // 3. Extraemos los datos
+
         snapshot.forEach((childSnapshot) => {
-            data.push(childSnapshot.val());
+            const val = childSnapshot.val();
+            // Truco Importante: Aseguramos que el score sea Numero para ordenar bien
+            // (Evita que "9" le gane a "100" si se guardó como texto)
+            val.score = Number(val.score); 
+            data.push(val);
         });
 
-        // 4. Ordenamos de Mayor a Menor
+        // Ordenamos de Mayor a Menor
         data.sort((a, b) => b.score - a.score);
 
-        // 5. Limpiamos la lista para pintar de cero
+        // Limpiamos la lista
         el.innerHTML = '';
 
         if (data.length === 0) {
             el.innerHTML = '<li style="text-align:center;">Sin récords</li>';
         } else {
             data.forEach((player, index) => {
-                // Lógica de medallas (Colores)
-                let color = 'white'; // Por defecto (tu CSS lo pone blanco, pero aquí destacamos el top 3)
+                let color = 'white';
                 let icon = `#${index + 1}`;
+                
+                // Colores para 1º, 2º y 3º
+                if (index === 0) { color = '#ffd700'; icon = '👑'; }
+                else if (index === 1) { color = '#c0c0c0'; }
+                else if (index === 2) { color = '#cd7f32'; }
 
-                if (index === 0) { color = '#ffd700'; icon = '👑'; } // Oro
-                else if (index === 1) { color = '#c0c0c0'; } // Plata
-                else if (index === 2) { color = '#cd7f32'; } // Bronce
-
-                // 6. Inyectamos el HTML limpio.
-                // NOTA: No ponemos estilos extra porque tu CSS '#leaderboardListOver li' ya hace el trabajo.
                 el.innerHTML += `
-                    <li style="color: ${color};">
-                        <span>${icon} ${player.name}</span>
+                    <li style="color: ${color}; display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #333;">
+                        <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:65%;">${icon} ${player.name}</span>
                         <span>${player.score}</span>
                     </li>`;
             });
         }
-    })
-    .catch(err => console.error("Error Firebase:", err));
+    }, (error) => {
+        console.error("Error leyendo DB:", error);
+    });
 }
 // --- 2. AUDIO ---
 const bgMusic = document.getElementById('bgMusic');
