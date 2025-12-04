@@ -1,30 +1,110 @@
-/* --- ESTILOS GENERALES --- */
-body {
+/* --- ESTILOS GENERALES Y RESET --- */
+html, body {
+    width: 100%;
+    height: 100%;
     margin: 0;
-    overflow: hidden;
+    padding: 0;
+    overflow: hidden; /* Evita cualquier barra de desplazamiento */
     background: #111;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    touch-action: none; /* Vital para juegos móviles */
+    touch-action: none; /* Vital para juegos móviles (evita zoom y scroll) */
 }
 
 canvas {
     display: block;
+    width: 100vw;  /* Fuerza el ancho total de la ventana */
+    height: 100vh; /* Fuerza el alto total de la ventana */
     background: url('../assets/images/fondo.png') no-repeat center center;
     background-size: cover;
 }
 
-/* --- CONTENEDORES DE PANTALLAS --- */
+/* --- INTERFAZ DE JUEGO (NUEVO HUD MEJORADO) --- */
+#uiLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Permite hacer clic "a través" de la interfaz */
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between; /* Puntaje a la izq, Vida a la der */
+    align-items: flex-start;
+    z-index: 5;
+}
+
+/* Caja del Puntaje */
+#scoreBoard {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 0 #000;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid #ffd700;
+    font-family: monospace; /* Fuente tipo arcade */
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Contenedor de las barras de vida */
+.player-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end; /* Alineados a la derecha */
+}
+
+/* Estilo de la barra de vida */
+.health-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+}
+
+.health-label {
+    font-weight: bold;
+    font-size: 1rem;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.health-bar-bg {
+    width: 150px;
+    height: 15px;
+    background: #222;
+    border-radius: 4px;
+    overflow: hidden; /* Para que el relleno no se salga de las esquinas redondeadas */
+    border: 1px solid #888;
+}
+
+.health-bar-fill {
+    height: 100%;
+    width: 100%;
+    transition: width 0.2s ease-out; /* Animación suave al recibir daño */
+}
+
+/* Colores de las barras */
+.p1-fill { background: linear-gradient(90deg, #00ffff, #0088aa); box-shadow: 0 0 5px #0ff; }
+.p2-fill { background: linear-gradient(90deg, #ff00ff, #aa0088); box-shadow: 0 0 5px #f0f; }
+
+
+/* --- PANTALLAS (INICIO, GAME OVER, PAUSA, GUÍA) --- */
 #startScreen, #gameOverScreen, #pauseScreen, #guideScreen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.95);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Centrado vertical */
+    justify-content: center;
     z-index: 10;
-    overflow-y: auto; /* Permite scroll si la pantalla es muy bajita */
-    padding: 20px;    /* Margen interno para que nada toque los bordes */
+    overflow-y: auto;
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -32,7 +112,7 @@ canvas {
 .title-container { text-align: center; margin-bottom: 15px; }
 
 h1 {
-    font-size: 3.5rem; /* Escala mejor que px */
+    font-size: 3.5rem;
     margin: 0 0 10px 0;
     color: #f0f;
     text-shadow: 0 0 15px #f0f, 2px 2px 0 #fff;
@@ -69,7 +149,7 @@ h2 {
 .setup-row {
     display: flex;
     justify-content: center;
-    gap: 20px; /* Espacio entre cajas */
+    gap: 20px;
     flex-wrap: wrap;
     width: 100%;
     max-width: 900px;
@@ -86,12 +166,12 @@ h2 {
     box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Espacio entre inputs dentro de la caja */
+    gap: 10px;
 }
 
 .setup-box h3 { margin: 0; color: #ddd; font-size: 1.1rem; }
 
-/* --- INPUTS Y FORMULARIOS --- */
+/* --- INPUTS --- */
 input[type="text"], select {
     width: 100%;
     padding: 12px;
@@ -101,7 +181,7 @@ input[type="text"], select {
     border: 1px solid #444;
     text-align: center;
     font-size: 1rem;
-    box-sizing: border-box; /* Evita que se salgan del borde */
+    box-sizing: border-box;
     outline: none;
 }
 
@@ -141,8 +221,8 @@ input[type="file"] { display: none; }
     text-align: left;
     font-size: 0.95rem;
     min-height: 50px;
-    max-height: 150px; /* Límite de altura */
-    overflow-y: auto;  /* Scroll si hay muchos */
+    max-height: 150px;
+    overflow-y: auto;
 }
 
 #leaderboardListStart li, #leaderboardListOver li {
@@ -207,7 +287,7 @@ button:hover { filter: brightness(1.2); }
 }
 .guide-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas en PC */
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
     text-align: left;
     margin: 20px 0;
@@ -227,46 +307,37 @@ button:hover { filter: brightness(1.2); }
     background: black;
     object-fit: contain;
 }
-.guide-item div { line-height: 1.3; } /* Separa las líneas de texto */
+.guide-item div { line-height: 1.3; }
 .guide-item b { color: #0ff; display: block; font-size: 0.9rem; }
 .guide-item span { color: #ccc; font-size: 0.8rem; }
 .guide-item.enemy-item b { color: #f05; }
 
-/* --- RESPONSIVE (CELULARES Y PANTALLAS PEQUEÑAS) --- */
+/* Clases utilitarias */
+.hidden { display: none !important; }
+.end-buttons { margin-top: 20px; }
+
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    /* Ajuste de textos */
     h1 { font-size: 2.5rem; }
     h2 { font-size: 1.2rem; }
     .prize-text { font-size: 1.1rem; padding: 5px 10px; }
 
-    /* Contenedores al 100% */
     .setup-box { width: 100%; padding: 15px; }
     .leaderboard-box { width: 100%; }
     
-    /* Ocultar elementos innecesarios en móvil */
     .mode-select, #p2Setup, #btn2P { display: none !important; }
     
-    /* Guía en una sola columna */
     .guide-grid { grid-template-columns: 1fr; }
     
-    /* Botones más grandes y accesibles */
     .start-btn { width: 90%; padding: 20px; font-size: 1.5rem; }
-    .end-buttons {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 10px;
-        align-items: center;
-    }
+    .end-buttons { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: center; }
     .retry-btn, .home-btn { width: 90%; padding: 15px; }
     
-    /* Ajustes de Inputs */
     input[type="text"], select { font-size: 1.1rem; padding: 15px; }
     
-    /* Interfaz de juego */
-    #uiLayer { font-size: 0.9rem; padding: 10px; }
+    /* Ajustes del HUD en móvil */
+    #uiLayer { padding: 10px; }
+    #scoreBoard { font-size: 1.1rem; padding: 8px 15px; }
+    .health-bar-bg { width: 100px; height: 10px; }
+    .health-label { font-size: 0.8rem; }
 }
-
-/* Clases utilitarias */
-.hidden { display: none !important; }
-.end-buttons { margin-top: 20px; }

@@ -54,10 +54,22 @@
     </div>
 
     <div id="uiLayer" class="hidden">
-        <div id="scoreBoard">Puntos: 0</div>
+        <div id="scoreBoard">SCORE: 0</div>
+        
         <div class="player-stats">
-            <div id="p1Stats" style="color:#0ff">P1: 100%</div>
-            <div id="p2Stats" style="color:#f0f; display:none;">P2: 100%</div>
+            <div class="health-container" id="p1Hud">
+                <span class="health-label" style="color:#0ff">P1</span>
+                <div class="health-bar-bg">
+                    <div id="p1HealthBar" class="health-bar-fill p1-fill"></div>
+                </div>
+            </div>
+
+            <div class="health-container hidden" id="p2Hud">
+                <span class="health-label" style="color:#f0f">P2</span>
+                <div class="health-bar-bg">
+                    <div id="p2HealthBar" class="health-bar-fill p2-fill"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -86,7 +98,7 @@
         </div>
 
         <div class="end-buttons">
-            <button onclick="location.reload()" class="retry-btn">🔄 REINTENTAR</button>
+            <button onclick="reiniciarPartida()" class="retry-btn">🔄 REINTENTAR</button>
             <button onclick="goHome()" class="home-btn">🏠 INICIO</button>
         </div>
     </div>
