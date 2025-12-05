@@ -258,13 +258,162 @@ button:active { transform: scale(0.98); }
 
 .hidden { display: none !important; }
 
+/* ==========================================================================
+   OPTIMIZACIÓN MÓVIL (CORREGIDA)
+   ========================================================================== */
 @media (max-width: 768px) {
-    h1 { font-size: 3rem; } h2 { font-size: 1.2rem; }
-    .setup-box { width: 90%; }
-    .start-btn { width: 100%; padding: 20px; font-size: 1.5rem; }
-    .retry-btn, .home-btn { width: 90%; }
-    #uiLayer { padding: 10px; }
-    #scoreBoard { font-size: 1.2rem; padding: 8px 15px; }
-    .health-bar-bg { width: 100px; height: 12px; }
-    .mode-select, #p2Setup, #btn2P { display: none !important; }
+    
+    /* --- 1. REGLA DE ORO: OCULTAR JUGADOR 2 Y SELECTOR DE MODO --- */
+    #p2Setup,           /* Oculta la caja del jugador 2 */
+    .mode-select,       /* Oculta los botones de 1 vs 2 jugadores */
+    #btn2P,             /* Por seguridad, si hay botón extra */
+    .p2-only {          /* Cualquier elemento exclusivo del P2 */
+        display: none !important;
+    }
+
+    /* --- 2. AJUSTE DE TÍTULOS (Para ganar espacio vertical) --- */
+    h1 { 
+        font-size: 2.8rem; /* Más pequeño para que no rompa la pantalla */
+        margin-bottom: 5px;
+    } 
+    h2 { 
+        font-size: 1rem; 
+        margin-bottom: 15px; 
+    }
+
+    /* --- 3. CONTENEDORES VERTICALES --- */
+    .setup-row {
+        flex-direction: column; /* Uno debajo del otro */
+        gap: 15px; /* Menos espacio entre cajas */
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .setup-box { 
+        width: 85%; /* Ancho cómodo pero dejando ver el fondo */
+        padding: 15px; /* Menos "gordura" interna */
+        margin: 0 auto; /* Centrado perfecto */
+    }
+
+    /* --- 4. INPUTS Y SELECTS MÓVILES --- */
+    input[type="text"], select {
+        height: 45px; /* Un poco más compactos */
+        font-size: 1.1rem;
+    }
+
+    /* --- 5. BOTÓN DE INICIO (GRANDE Y CÓMODO) --- */
+    .start-btn { 
+        width: 90%; 
+        padding: 18px; 
+        font-size: 1.6rem; 
+        margin-top: 10px;
+        position: relative;
+        z-index: 100;
+        /* Efecto pulsante sutil para llamar la atención */
+        animation: pulseBtn 2s infinite;
+    }
+
+    /* --- 6. HUD DURANTE EL JUEGO (Más compacto) --- */
+    #uiLayer { 
+        padding: 10px; 
+        flex-direction: column; /* Poner puntaje arriba y vida abajo si es necesario */
+        align-items: center;
+    }
+    #scoreBoard { 
+        font-size: 1.2rem; 
+        padding: 5px 15px; 
+        margin-bottom: 5px;
+    }
+    .health-bar-bg { 
+        width: 120px; /* Barra de vida más corta para que quepa */
+        height: 14px; 
+    }
+}
+
+/* Animación opcional para el botón en celular */
+@keyframes pulseBtn {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+    70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}
+#gameOverScreen button {
+    padding: 15px 40px;
+    font-size: 1.4rem;
+    font-weight: 900; /* Texto súper grueso */
+    border: 3px solid #ffd700; /* ¡BORDE DORADO GRUESO! */
+    border-radius: 35px; /* Más redondeados */
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* Sombra doble para efecto 3D y brillo dorado */
+    box-shadow: 
+        0 5px 15px rgba(0,0,0,0.5), /* Sombra negra para profundidad */
+        inset 0 2px 5px rgba(255,255,255,0.3), /* Brillo interior superior */
+        0 0 20px rgba(255, 215, 0, 0.4); /* Halo dorado exterior */
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Sombra en el texto para que resalte */
+    margin: 12px; /* Un poco más de espacio entre ellos */
+}
+
+/* Efecto al pasar el mouse (Hover) - General */
+#gameOverScreen button:hover {
+    transform: translateY(-4px) scale(1.02); /* Se levanta y crece un poco */
+    filter: brightness(1.15); /* Se vuelve más brillante */
+}
+
+/* --- BOTÓN REINTENTAR (Verde Festivo) --- */
+.retry-btn {
+    /* Gradiente verde más rico y profundo, como un árbol de navidad */
+    background: linear-gradient(to bottom, #009900, #005500);
+    /* Reforzamos el brillo dorado específico de este botón */
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        inset 0 3px 8px rgba(255, 255, 255, 0.3),
+        0 0 25px rgba(255, 215, 0, 0.7) !important;
+}
+.retry-btn:hover {
+    /* Brillo verde y dorado intenso al pasar el mouse */
+    box-shadow: 
+        0 8px 25px rgba(0, 200, 0, 0.5),
+        0 0 35px rgba(255, 215, 0, 0.9) !important;
+}
+
+/* --- BOTÓN INICIO (Azul Real) --- */
+.home-btn {
+    /* Gradiente azul real, profundo y elegante */
+    background: linear-gradient(to bottom, #0066cc, #003377);
+    /* Reforzamos el brillo dorado específico de este botón */
+    box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        inset 0 3px 8px rgba(255, 255, 255, 0.3),
+        0 0 25px rgba(255, 215, 0, 0.7) !important;
+}
+.home-btn:hover {
+    /* Brillo azul y dorado intenso al pasar el mouse */
+    box-shadow: 
+        0 8px 25px rgba(0, 150, 255, 0.5),
+        0 0 35px rgba(255, 215, 0, 0.9) !important;
+}
+/* --- DENTRO DE @media (max-width: 768px) --- */
+
+/* Aseguramos que los botones de Game Over se vean grandes y centrados */
+#gameOverScreen button {
+    width: 85%; /* Ocupan casi todo el ancho */
+    margin: 15px auto; /* Centrados horizontalmente con espacio vertical */
+    padding: 20px; /* Más altos para que el dedo no falle */
+    font-size: 1.6rem; /* Texto más grande */
+    display: flex; /* Para centrar el icono y el texto perfectamente */
+    justify-content: center;
+    align-items: center;
+    /* Una animación sutil para llamar la atención en móvil */
+    animation: pulseGoldenBtn 3s infinite;
+}
+
+/* Animación suave de latido dorado */
+@keyframes pulseGoldenBtn {
+    0% { box-shadow: 0 5px 15px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 5px 20px rgba(0,0,0,0.6), 0 0 35px rgba(255, 215, 0, 0.7); transform: scale(1.01); }
+    100% { box-shadow: 0 5px 15px rgba(0,0,0,0.5), 0 0 20px rgba(255, 215, 0, 0.4); }
 }
