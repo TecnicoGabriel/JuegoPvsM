@@ -1,7 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- 1. CONFIGURACIÓN FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyCfwpnyqtXnnVwx1Mm2k9MTm-laCdQ13Xo", 
     authDomain: "juego-padrastro.firebaseapp.com",
@@ -23,34 +22,25 @@ function loadLeaderboard() {
     const el = document.getElementById('leaderboardListOver');
     if (!el) return;
 
-    // 1. Si ya estamos escuchando cambios, apagamos la escucha anterior 
-    // para que no se vuelvan locos los datos al reiniciar el juego.
     if (scoreListener) {
         db.ref('scores').off(); 
     }
 
     el.innerHTML = '<li style="text-align:center; color:#888;">Actualizando...</li>';
 
-    // 2. Creamos la referencia a la base de datos
     const query = db.ref('scores').orderByChild('score').limitToLast(5);
 
-    // 3. ACTIVAMOS EL MODO EN VIVO (.on)
-    // Esto se ejecutará automáticamente apenas tu saveHighscore termine de subir el dato.
     scoreListener = query.on('value', (snapshot) => {
         const data = [];
 
         snapshot.forEach((childSnapshot) => {
             const val = childSnapshot.val();
-            // Truco Importante: Aseguramos que el score sea Numero para ordenar bien
-            // (Evita que "9" le gane a "100" si se guardó como texto)
             val.score = Number(val.score); 
             data.push(val);
         });
 
-        // Ordenamos de Mayor a Menor
         data.sort((a, b) => b.score - a.score);
 
-        // Limpiamos la lista
         el.innerHTML = '';
 
         if (data.length === 0) {
@@ -60,7 +50,6 @@ function loadLeaderboard() {
                 let color = 'white';
                 let icon = `#${index + 1}`;
                 
-                // Colores para 1º, 2º y 3º
                 if (index === 0) { color = '#ffd700'; icon = '👑'; }
                 else if (index === 1) { color = '#c0c0c0'; }
                 else if (index === 2) { color = '#cd7f32'; }
@@ -76,7 +65,7 @@ function loadLeaderboard() {
         console.error("Error leyendo DB:", error);
     });
 }
-// --- 2. AUDIO ---
+
 const bgMusic = document.getElementById('bgMusic');
 const volSlider = document.getElementById('volSlider');
 const genreSelect = document.getElementById('musicGenre');
@@ -97,18 +86,17 @@ function playMusic() {
 }
 if(volSlider) volSlider.addEventListener('input', e => bgMusic.volume=e.target.value);
 
-// --- 3. IMÁGENES ---
 const img = (src) => { let i = new Image(); i.src = `assets/images/${src}`; return i; };
 const images = {
-    p1: img('jugador.png'), p2: img('jugador2.png'),
-    enemy: img('enemigo_base.png'), shooter: img('enemigo_shooter.png'),
-    tri: img('enemigo_tri.png'), laser: img('enemigo_laser.png'),
-    boss1: img('boss1.png'), boss2: img('boss2.png'), boss3: img('boss3.png'), bossF: img('boss4.png'),
-    bulletP: img('corazon.png'), bulletE: img('bala_enemiga.png'), bulletC: img('bala_canon.png'),
-    helper: img('ayudante.png'),
-    pMetra: img('poder_metralleta.png'), pCanon: img('poder_canon.png'),
-    pAyuda: img('poder_ayudante.png'), pVida: img('poder_vida_full.png'), pVidaSmall: img('poder_vida.png'),
-    pSpread: img('poder_spread.png'), pDoble: img('poder_arma.png')
+    p1: img('jugador1.png'), p2: img('jugador22.png'),
+    enemy: img('enemigo_base1.png'), shooter: img('enemigo_shooter1.png'),
+    tri: img('enemigo_tri1.png'), laser: img('enemigo_laser1.png'),
+    boss1: img('boss11.png'), boss2: img('boss22.png'), boss3: img('boss33.png'), bossF: img('boss44.png'),
+    bulletP: img('corazon1.png'), bulletE: img('bala_enemiga1.png'), bulletC: img('bala_canon1.png'),
+    helper: img('ayudante1.png'),
+    pMetra: img('poder_metralleta1.png'), pCanon: img('poder_canon1.png'),
+    pAyuda: img('poder_ayudante1.png'), pVida: img('poder_vida_full1.png'), pVidaSmall: img('poder_vida1.png'),
+    pSpread: img('poder_spread1.png'), pDoble: img('poder_arma1.png')
 };
 
 // --- 4. VARIABLES GLOBALES ---

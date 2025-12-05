@@ -1,103 +1,81 @@
-/* --- ESTILOS GENERALES Y RESET --- */
+/* --- ESTILOS GENERALES Y RESET (TEMA NAVIDEÑO FINAL) --- */
 html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Evita cualquier barra de desplazamiento */
-    background: #111;
+    overflow: hidden;
+    background: #050b14;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    touch-action: none; /* Vital para juegos móviles (evita zoom y scroll) */
+    touch-action: none;
 }
 
 canvas {
     display: block;
-    width: 100vw;  /* Fuerza el ancho total de la ventana */
-    height: 100vh; /* Fuerza el alto total de la ventana */
-    background: url('../assets/images/fondo.png') no-repeat center center;
+    width: 100vw;
+    height: 100vh;
+    background: url('../assets/images/fondo1.png') no-repeat center center;
     background-size: cover;
 }
 
-/* --- INTERFAZ DE JUEGO (NUEVO HUD MEJORADO) --- */
+/* --- INTERFAZ (HUD) --- */
 #uiLayer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Permite hacer clic "a través" de la interfaz */
+    pointer-events: none;
     padding: 15px;
     box-sizing: border-box;
     display: flex;
-    justify-content: space-between; /* Puntaje a la izq, Vida a la der */
+    justify-content: space-between;
     align-items: flex-start;
     z-index: 5;
 }
 
-/* Caja del Puntaje */
 #scoreBoard {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    color: #ffd700;
-    text-shadow: 2px 2px 0 #000;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px 20px;
-    border-radius: 12px;
-    border: 1px solid #ffd700;
-    font-family: monospace; /* Fuente tipo arcade */
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    color: #fff;
+    text-shadow: 0 0 5px #ff0000;
+    background: rgba(160, 0, 0, 0.8);
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: 2px solid #ffd700;
+    font-family: monospace;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
 
-/* Contenedor de las barras de vida */
 .player-stats {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    align-items: flex-end; /* Alineados a la derecha */
+    align-items: flex-end;
 }
 
-/* Estilo de la barra de vida */
 .health-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 5px 10px;
-    border-radius: 8px;
-    border: 1px solid #555;
+    background: rgba(0, 50, 0, 0.8);
+    padding: 8px 12px;
+    border-radius: 15px;
+    border: 1px solid #8fbc8f;
 }
 
-.health-label {
-    font-weight: bold;
-    font-size: 1rem;
-    text-shadow: 1px 1px 0 #000;
-}
+.health-label { font-weight: bold; font-size: 1rem; color: #ffd700; }
+.health-bar-bg { width: 150px; height: 18px; background: #333; border-radius: 10px; overflow: hidden; border: 2px solid #fff; }
+.health-bar-fill { height: 100%; width: 100%; transition: width 0.2s ease-out; border-radius: 8px; }
 
-.health-bar-bg {
-    width: 150px;
-    height: 15px;
-    background: #222;
-    border-radius: 4px;
-    overflow: hidden; /* Para que el relleno no se salga de las esquinas redondeadas */
-    border: 1px solid #888;
-}
+.p1-fill { background: repeating-linear-gradient(45deg, #00c800, #00c800 10px, #fff 10px, #fff 20px); box-shadow: 0 0 10px #0f0; }
+.p2-fill { background: repeating-linear-gradient(45deg, #ff0000, #ff0000 10px, #fff 10px, #fff 20px); box-shadow: 0 0 10px #f00; }
 
-.health-bar-fill {
-    height: 100%;
-    width: 100%;
-    transition: width 0.2s ease-out; /* Animación suave al recibir daño */
-}
-
-/* Colores de las barras */
-.p1-fill { background: linear-gradient(90deg, #00ffff, #0088aa); box-shadow: 0 0 5px #0ff; }
-.p2-fill { background: linear-gradient(90deg, #ff00ff, #aa0088); box-shadow: 0 0 5px #f0f; }
-
-
-/* --- PANTALLAS (INICIO, GAME OVER, PAUSA, GUÍA) --- */
+/* --- PANTALLAS --- */
 #startScreen, #gameOverScreen, #pauseScreen, #guideScreen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: radial-gradient(circle, rgba(15, 30, 60, 0.95) 0%, rgba(0, 5, 10, 0.98) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -108,243 +86,185 @@ canvas {
     box-sizing: border-box;
 }
 
-/* --- TIPOGRAFÍA Y TÍTULOS --- */
-.title-container { text-align: center; margin-bottom: 15px; }
+.title-container { text-align: center; margin-bottom: 20px; }
 
 h1 {
-    font-size: 3.5rem;
-    margin: 0 0 10px 0;
-    color: #f0f;
-    text-shadow: 0 0 15px #f0f, 2px 2px 0 #fff;
+    font-size: 4.5rem;
+    margin: 0 0 5px 0;
+    background: linear-gradient(to bottom, #ff3333 0%, #ffcc00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-align: center;
-    line-height: 1.1;
+    font-weight: 900;
     letter-spacing: 2px;
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
 }
 
-h2 {
-    font-size: 1.8rem;
-    margin: 0 0 20px 0;
-    color: #0ff;
-    text-shadow: 0 0 10px #0ff;
-    font-weight: normal;
-}
+h2 { font-size: 1.5rem; margin: 0 0 30px 0; color: #89CFF0; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 10px #00ffff; }
 
-.prize-text {
-    color: #ffd700;
-    font-size: 1.5rem;
-    margin: 0 0 20px 0;
-    font-weight: bold;
-    text-transform: uppercase;
-    animation: blink 1s infinite;
-    text-shadow: 0 0 15px orange;
-    background: rgba(255, 215, 0, 0.1);
-    padding: 5px 15px;
-    border-radius: 50px;
-    border: 1px solid #ffd700;
-}
-
-@keyframes blink { 50% { opacity: 0.5; transform: scale(0.98); } }
-
-/* --- CAJAS DE CONFIGURACIÓN (SETUP) --- */
+/* --- CAJAS DE CONFIGURACIÓN --- */
 .setup-row {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 25px;
     flex-wrap: wrap;
     width: 100%;
     max-width: 900px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .setup-box {
-    border: 1px solid #555;
-    padding: 20px;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    width: 240px;
+    border: 2px solid rgba(135, 206, 235, 0.5);
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(13, 24, 41, 0.6);
+    backdrop-filter: blur(10px);
+    width: 280px;
     max-width: 100%;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 0 30px rgba(0, 191, 255, 0.15);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
-.setup-box h3 { margin: 0; color: #ddd; font-size: 1.1rem; }
+.setup-box h3 { margin: 0; color: #e0ffff; font-size: 1.2rem; text-align: center; text-shadow: 0 0 8px #0ff; text-transform: uppercase; }
 
-/* --- INPUTS --- */
+
+/* ==========================================================================
+   INPUTS Y LISTAS ARREGLADOS (CENTRADO PERFECTO + ESTILO NIEVE)
+   ========================================================================== */
+
+/* --- INPUTS Y LISTAS (CENTRADOS Y LIMPIOS) --- */
+
 input[type="text"], select {
+    /* 1. Limpieza total */
+    appearance: none; -webkit-appearance: none; -moz-appearance: none;
+    
     width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    background: #222;
-    color: #fff;
-    border: 1px solid #444;
-    text-align: center;
-    font-size: 1rem;
+    height: 50px;
+    border-radius: 25px;
+    
+    /* 2. Estilo Oscuro (Se ve mejor con tu fondo de estrellas) */
+    background-color: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(5px);
+    
+    color: #fff; 
+    border: 2px solid #ffd700; 
+    
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: inherit;
+    
     box-sizing: border-box;
     outline: none;
-}
-
-input[type="text"]:focus, select:focus { border-color: #0ff; }
-
-.file-upload {
-    display: block;
-    padding: 10px;
-    border: 1px dashed #0ff;
-    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
     cursor: pointer;
-    color: #0ff;
-    font-size: 0.9rem;
-    transition: 0.3s;
-    background: rgba(0, 255, 255, 0.05);
-}
-.file-upload:hover { background: rgba(0, 255, 255, 0.15); }
-input[type="file"] { display: none; }
 
-/* --- TABLA DE LÍDERES --- */
-.leaderboard-box {
-    background: #151515;
-    border: 2px solid #ffd700;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
-    width: 320px;
-    max-width: 90%;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
-}
-.leaderboard-box h3 { margin: 0 0 10px 0; color: #ffd700; font-size: 1.2rem; text-transform: uppercase; }
-
-#leaderboardListStart, #leaderboardListOver {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: left;
-    font-size: 0.95rem;
-    min-height: 50px;
-    max-height: 250px;
-    overflow-y: auto;
-}
-
-#leaderboardListStart li, #leaderboardListOver li {
-    padding: 8px 5px;
-    border-bottom: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-}
-#leaderboardListStart li span:first-child, 
-#leaderboardListOver li span:first-child {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 60%; /* Limita el nombre al 60% del ancho */
-}
-
-/* --- BOTONES --- */
-button {
-    padding: 15px 35px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: transform 0.1s, filter 0.2s;
-    margin: 5px;
-}
-button:active { transform: scale(0.95); }
-button:hover { filter: brightness(1.2); }
-
-.start-btn {
-    background: linear-gradient(45deg, #f0f, #a0f);
-    color: white;
-    box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
-    width: 250px;
-    max-width: 90%;
-}
-
-.retry-btn { background: #0f0; color: black; }
-.home-btn { background: #f00; color: white; }
-
-.mode-select { margin: 15px 0; }
-.mode-select button {
-    padding: 10px 20px;
-    background: #333;
-    color: #aaa;
-    border: 2px solid transparent;
-    font-size: 0.9rem;
-}
-.mode-select button.active {
-    background: #000;
-    color: #0f0;
-    border-color: #0f0;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-/* --- GUÍA DE JUEGO --- */
-.guide-content {
-    background: #1a1a1a;
-    border: 2px solid #e6b800;
-    padding: 25px;
-    border-radius: 15px;
-    max-width: 95%;
-    width: 500px;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
-}
-.guide-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    text-align: left;
-    margin: 20px 0;
-}
-.guide-item {
+    /* 3. EL CENTRADO REAL (Sin paddings locos) */
+    text-align: center; 
+    text-align-last: center; /* Obliga al texto seleccionado a ir al centro */
+    
+    /* Solo un poco de padding para que no choque con los bordes, pero SIMÉTRICO */
+    padding: 0 20px; 
+    
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.05);
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #333;
+    justify-content: center;
 }
-.guide-item img {
-    width: 40px; height: 40px;
-    margin-right: 12px;
-    border: 1px solid #666;
-    background: black;
-    object-fit: contain;
-}
-.guide-item div { line-height: 1.3; }
-.guide-item b { color: #0ff; display: block; font-size: 0.9rem; }
-.guide-item span { color: #ccc; font-size: 0.8rem; }
-.guide-item.enemy-item b { color: #f05; }
 
-/* Clases utilitarias */
+/* Flecha Dorada (A la derecha, sin estorbar el centro) */
+select {
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFD700%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+/* Efectos Focus */
+input[type="text"]:focus, select:focus {
+    background-color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+/* --- ESTILO DE LA LISTA DESPLEGADA (EL POPUP) --- */
+select option {
+    background-color: #111; /* Fondo negro */
+    color: #ffd700; /* Texto dorado */
+    font-size: 1rem;
+    padding: 10px 0; /* Padding vertical, 0 horizontal para forzar centro */
+    
+    /* COMANDOS PARA CENTRAR LAS OPCIONES */
+    text-align: center; 
+    text-align-last: center;
+    
+    /* Truco para Firefox y algunos navegadores */
+    display: flex;
+    justify-content: center;
+}
+
+/* --- OTROS ELEMENTOS --- */
+.file-upload {
+    display: block; padding: 12px; border: 2px dashed #ffd700; border-radius: 15px;
+    cursor: pointer; color: #ffd700; font-size: 1rem; transition: 0.3s;
+    background: rgba(0, 0, 0, 0.3); text-align: center;
+}
+.file-upload:hover { background: rgba(255, 215, 0, 0.15); }
+input[type="file"] { display: none; }
+
+.leaderboard-box {
+    background: rgba(80, 10, 10, 0.85); border: 3px solid #ffd700; border-radius: 20px;
+    padding: 20px; margin-bottom: 25px; width: 350px; max-width: 90%;
+    box-shadow: 0 0 25px rgba(255, 50, 50, 0.3); position: relative;
+}
+.leaderboard-box::before {
+    content: ''; position: absolute; top: -6px; left: 15px; right: 15px; height: 6px;
+    background: rgba(255,255,255,0.8); border-radius: 10px;
+}
+.leaderboard-box h3 {
+    margin: 0 0 15px 0; color: #ffd700; font-size: 1.3rem; text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3); padding-bottom: 10px; text-align: center;
+}
+#leaderboardListStart li, #leaderboardListOver li {
+    padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex; justify-content: space-between; font-size: 1.05rem;
+}
+
+button {
+    padding: 15px 40px; font-size: 1.3rem; border: none; border-radius: 50px; cursor: pointer;
+    font-weight: bold; text-transform: uppercase; transition: all 0.2s; margin: 10px; position: relative;
+    border: 2px solid rgba(255,255,255,0.3); text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+button:hover { transform: translateY(-4px); filter: brightness(1.15); }
+button:active { transform: scale(0.98); }
+
+.start-btn { background: linear-gradient(180deg, #ff4444, #aa0000); color: white; box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4); }
+.retry-btn { background: linear-gradient(180deg, #44cc44, #006600); color: white; box-shadow: 0 6px 20px rgba(0, 255, 0, 0.3); }
+.home-btn { background: linear-gradient(180deg, #00ccff, #005588); color: white; box-shadow: 0 6px 20px rgba(0, 150, 255, 0.3); }
+
+.mode-select button { padding: 10px 20px; background: rgba(0,0,0,0.5); color: #aaa; border: 1px solid #555; font-size: 1rem; border-radius: 12px; }
+.mode-select button.active { background: #006400; color: #fff; border-color: #0f0; box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); }
+
+.guide-content {
+    background: #0a1a0a; border: 2px solid #c41e3a; padding: 25px; border-radius: 15px;
+    max-width: 95%; width: 500px; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 50px rgba(196, 30, 58, 0.4);
+}
+.guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; margin: 20px 0; }
+.guide-item { display: flex; align-items: center; background: rgba(255,255,255,0.08); padding: 10px; border-radius: 8px; border: 1px solid #333; }
+.guide-item img { width: 40px; height: 40px; margin-right: 12px; border: 2px solid #ffd700; background: rgba(0,0,0,0.5); object-fit: contain; border-radius: 5px; }
+.guide-item b { color: #ffd700; display: block; font-size: 0.9rem; }
+.guide-item span { color: #ddd; font-size: 0.8rem; }
+.guide-item.enemy-item b { color: #ff6666; }
+
 .hidden { display: none !important; }
-.end-buttons { margin-top: 20px; }
 
-/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 1.2rem; }
-    .prize-text { font-size: 1.1rem; padding: 5px 10px; }
-
-    .setup-box { width: 100%; padding: 15px; }
-    .leaderboard-box { width: 100%; }
-    
-    .mode-select, #p2Setup, #btn2P { display: none !important; }
-    
-    .guide-grid { grid-template-columns: 1fr; }
-    
-    .start-btn { width: 90%; padding: 20px; font-size: 1.5rem; }
-    .end-buttons { display: flex; flex-direction: column; width: 100%; gap: 10px; align-items: center; }
-    .retry-btn, .home-btn { width: 90%; padding: 15px; }
-    
-    input[type="text"], select { font-size: 1.1rem; padding: 15px; }
-    
-    /* Ajustes del HUD en móvil */
+    h1 { font-size: 3rem; } h2 { font-size: 1.2rem; }
+    .setup-box { width: 90%; }
+    .start-btn { width: 100%; padding: 20px; font-size: 1.5rem; }
+    .retry-btn, .home-btn { width: 90%; }
     #uiLayer { padding: 10px; }
-    #scoreBoard { font-size: 1.1rem; padding: 8px 15px; }
-    .health-bar-bg { width: 100px; height: 10px; }
-    .health-label { font-size: 0.8rem; }
+    #scoreBoard { font-size: 1.2rem; padding: 8px 15px; }
+    .health-bar-bg { width: 100px; height: 12px; }
+    .mode-select, #p2Setup, #btn2P { display: none !important; }
 }
